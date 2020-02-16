@@ -14,11 +14,10 @@ section .data
     SYS_CLOSE equ 3
     SYS_EXIT equ 60
     O_RDONLY equ 000000q
-    BUFF_SIZE equ 255
+    BUFF_SIZE equ 65536
     STDOUT equ 1
     EXIT_SUCCESS equ 0
     fileDesc dq 0
-    fileName dq NULL
     newLine db LF,NULL
     spaceLine db SPACE_CHAR,NULL
     lineOpt db "-l"
@@ -30,6 +29,7 @@ section .data
     linesNum dq 0
     charsNum dq 0
     wordsNum dq 0
+    fileName dq NULL
 
 section .bss
     readBuffer resb BUFF_SIZE
@@ -292,6 +292,8 @@ main:
     ;the r13 register contains the arguments while the r12 registers contains the number of arguments
     mov rbx,0
     ;puts in rdi register the string to print on the terminal
+    mov rdi,spaceLine
+    call printString
 readArgsLoop:
     mov rdi,qword[r13+rbx*8]
     call checkArgs
@@ -316,12 +318,14 @@ readArgsLoop:
     mov rdx,BUFF_SIZE
     syscall
 
+
     mov r13,0
     mov r14,0
     mov r15,0
     mov r13b,byte[lineOptFlag]
     mov r14b,byte[wordOptFlag]
     mov r15b,byte[charOptFlag]
+
 
     cmp r13b,1
     je callLineCount
@@ -333,6 +337,8 @@ callWordCountEnd:
     je callCharCount
 callCharCountEnd:
     mov rdi,fileName
+    call printString
+    mov rdi,newLine
     call printString
     jmp end
 
@@ -370,8 +376,6 @@ callCharCount:
 
 
 end:
-    mov rdi,newLine
-    call printString
 
     mov rax,SYS_CLOSE
     mov rdi,qword[fileDesc]
