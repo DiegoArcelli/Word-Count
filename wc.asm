@@ -271,15 +271,19 @@ optionFound:
     je activeCharOption
     jmp checkDone
 activeLineOption:
-    add byte[lineOptFlag],1
+    mov byte[lineOptFlag],1
     jmp checkDone
 activeWordOption:
-    add byte[wordOptFlag],1
+    mov byte[wordOptFlag],1
     jmp checkDone
 activeCharOption:
-    add byte[charOptFlag],1
+    mov byte[charOptFlag],1
     jmp checkDone
-
+activeAll:
+    mov byte[charOptFlag],1
+    mov byte[wordOptFlag],1
+    mov byte[lineOptFlag],1
+    jmp activeAllEnd
 
 
 
@@ -318,15 +322,19 @@ readArgsLoop:
     mov rdx,BUFF_SIZE
     syscall
 
-
+activeAllEnd:
+    mov r12,0
     mov r13,0
     mov r14,0
     mov r15,0
     mov r13b,byte[lineOptFlag]
     mov r14b,byte[wordOptFlag]
     mov r15b,byte[charOptFlag]
-
-
+    add r12b,byte[lineOptFlag]
+    add r12b,byte[lineOptFlag]
+    add r12b,byte[wordOptFlag]
+    cmp r12b,0
+    je activeAll
     cmp r13b,1
     je callLineCount
 callLineCountEnd:
@@ -341,7 +349,6 @@ callCharCountEnd:
     mov rdi,newLine
     call printString
     jmp end
-
 
 callLineCount:
     mov rdi,readBuffer
@@ -374,9 +381,7 @@ callCharCount:
     call printString
     jmp callCharCountEnd
 
-
 end:
-
     mov rax,SYS_CLOSE
     mov rdi,qword[fileDesc]
     syscall
