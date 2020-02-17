@@ -1,4 +1,4 @@
-;implementation of word count shell command in assembly x86_64
+;implementation of word count shell command in x86_64 assembly
 
 section .data
     NULL equ 0
@@ -41,7 +41,7 @@ section .text
     global checkArgs
     global countChars
     global countWords
-    global CountsLine
+    global countLines
     global copyFileName
     global printNumber
 
@@ -68,10 +68,10 @@ findDivisorLoopDone:
     mov rdx,0
     mov rsi,10
     div rsi
-    mov rsi,rax ;rsi contains the highest divisor
-    mov rcx,numberToPrint ;rcx point to the array that will be load with the characters to print
+    mov rsi,rax
+    mov rcx,numberToPrint
 printNumberLoop:
-    cmp rsi,0 ;if the divisor is 0 end
+    cmp rsi,0
     je printNumberLoopDone
     mov rax,rbx
     mov rdx,0
@@ -79,7 +79,6 @@ printNumberLoop:
     add rax,48
     mov qword[rcx],rax
     inc rcx
-    ;get the new number
     add rax,-48
     mov r10,rax
     mov rax,rbx
@@ -291,11 +290,7 @@ activeAll:
 main:
     mov r12, rdi
     mov r13, rsi
-    ; mov rdi,newLine
-    ; call printString
-    ;the r13 register contains the arguments while the r12 registers contains the number of arguments
     mov rbx,0
-    ;puts in rdi register the string to print on the terminal
     mov rdi,spaceLine
     call printString
 readArgsLoop:
@@ -380,7 +375,6 @@ callCharCount:
     mov rdi,spaceLine
     call printString
     jmp callCharCountEnd
-
 end:
     mov rax,SYS_CLOSE
     mov rdi,qword[fileDesc]
